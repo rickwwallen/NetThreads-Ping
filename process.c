@@ -77,13 +77,12 @@ int process_icmp(struct net_iface *iface, struct ioq_header *ioq, struct ether_h
 	rip->saddr_l = ip->daddr_l;
 	rip->daddr_h = ip->saddr_h;
 	rip->daddr_l = ip->saddr_l;
-	rip->check = ntohs(0);
 	//rip->check = ones_complement_sum(rip, ntohs(ip->tot_len));
+	rip->check = ntohs(0);
 	acc = ones_complement_sum(rip, htons(ip->tot_len));
 	rip->check = htons(acc);
 	acc = 0;
 	// fill icmp
-	//memcpy(ricmp, icmp, (ntohs(ip->tot_len) - sizeof(struct iphdr)));
 	memcpy(ricmp, icmp, (ntohs(ip->tot_len) - sizeof(struct iphdr)));
 
 	ricmp->type = ICMP_ECHOREPLY;
@@ -145,8 +144,6 @@ int process_arp(struct net_iface *iface, struct ioq_header *ioq, struct ether_he
 
 	// Testing how to make new pointer point to the correct location
 	my_etharp = pkt_pull(pkt, sizeof(struct ether_arp));
-	//my_etharp = (struct ether_arp*) eth + (sizeof(struct ether_header));
-	//my_etharp = (struct ether_arp*) pkt + (sizeof(struct ioq_header) + sizeof(struct ether_header));
 
 	// If we aren't getting a request or reply we don't care
 	//if(ntohs(etharp->ea_hdr.ar_hrd) != ARPHRD_ETHER || 
@@ -278,7 +275,6 @@ int process_eth(struct net_iface *iface, t_addr *data)
 
 	pkt_fill(&my_pkt, data,  ntohs(ioq->byte_length) + sizeof(struct ioq_header));
 	pkt_pull(&my_pkt, sizeof(struct ioq_header));
-	//eth = pkt_pull(&my_pkt, sizeof(struct ioq_header));
 	eth = pkt_pull(&my_pkt, sizeof(struct ether_header));
 
 	//my_pkt = nf_pktout_alloc(ntohs(ioq->byte_length) + sizeof(struct ioq_header));
@@ -329,7 +325,6 @@ int process_eth(struct net_iface *iface, t_addr *data)
 int main(void)
 {
 	t_addr *pkt;
-//	t_addr *nxt_pkt;
 	struct net_iface iface;
 	struct ether_header *reth;
 	struct ether_arp *rarp;
@@ -374,6 +369,8 @@ int main(void)
 	nf_pktout_init();
 	nf_pktin_init();
 
+	// This sends an initial request to the route
+	// Purpose is to let everyone know we have joined the network
 	// This is to just send an ARP request to router
 	// allocate an output buffer
 	pkt = nf_pktout_alloc(ARP_PKT_SIZE);
