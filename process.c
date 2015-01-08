@@ -263,11 +263,11 @@ int process_eth(struct net_iface *iface, t_addr *data)
 	struct pkt_buff my_pkt; 
 	int result;
 	struct ioq_header *ioq;
-	unsigned int size;
 	struct ether_header *eth;
-	struct ether_arp *etharp;
-	struct iphdr *ip;
-	struct icmphdr *icmp;
+	//unsigned int size;
+	//struct ether_arp *etharp;
+	//struct iphdr *ip;
+	//struct icmphdr *icmp;
 
 	result = 0;
 
