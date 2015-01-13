@@ -78,9 +78,12 @@ int process_icmp(struct net_iface *iface, struct ioq_header *ioq, struct ether_h
 	rip->daddr_h = ip->saddr_h;
 	rip->daddr_l = ip->saddr_l;
 	//rip->check = ones_complement_sum(rip, ntohs(ip->tot_len));
-	rip->check = ntohs(0);
-	acc = ones_complement_sum(rip, htons(ip->tot_len));
+	rip->check = htons(0);
+	acc = ones_complement_sum(rip, sizeof(struct iphdr));
 	rip->check = htons(acc);
+	//rip->check = ntohs(0);
+	//acc = ones_complement_sum(rip, htons(ip->tot_len));
+	//rip->check = htons(acc);
 	acc = 0;
 	// fill icmp
 	memcpy(ricmp, icmp, (ntohs(ip->tot_len) - sizeof(struct iphdr)));
